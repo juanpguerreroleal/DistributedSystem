@@ -73,17 +73,24 @@ public class InterfazDatos {
                     }
                     //Se realiza un update de la tabla
                     gui.updateTable();
-                    soyServidor = !estadoSaturacion();
-                    ipOptima = obtenerIpOptima();
-                    enviarNuevoServidor(ipOptima);
+                    //Se llama al modelo
                     modelo = (DefaultTableModel) Table.tabla.getModel();
+                    //Se recorre toda la tabla
                     for (int f = 0; f < modelo.getRowCount(); f++) {
+                        //Si algun valor de cualquier fila de la columna 0 (ip) no esta dentro del ArrayList ips
                         if (!InterfazDatos.ips.contains(modelo.getValueAt(f, 0))) {
-                            //String ipEliminada = String.valueOf(modelo.getValueAt(f, 0));
-                            //System.out.println(ipEliminada);
-                            //Table.eliminarfilas(String.valueOf(modelo.getValueAt(f, 0)));
+                            //Obteniendo la ip a eliminar de la tabla
+                            String ipEliminada = String.valueOf(modelo.getValueAt(f, 0));
+                            //Eliminando ip a eliminar de la tabla
+                            Table.eliminarfilas(ipEliminada);
                         }
                     }
+                    //Se verifica si aun si la maquina local es servidor verificando la saturacion
+                    soyServidor = !estadoSaturacion();
+                    //Se obtiene la ip optima
+                    ipOptima = obtenerIpOptima();
+                    //Se envia el nuevo servidor a todas las maquinas
+                    enviarNuevoServidor(ipOptima);
                 }
 
             }
@@ -173,7 +180,7 @@ public class InterfazDatos {
     private static boolean estadoSaturacion() {
         boolean estado;
         OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-        long usoProcesador = (long)(osBean.getProcessCpuLoad() * 100);
+        long usoProcesador = (long) (osBean.getProcessCpuLoad() * 100);
         estado = colaClientes.size() > 50 && usoProcesador > 90;
         return estado;
     }
