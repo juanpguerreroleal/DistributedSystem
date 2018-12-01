@@ -31,17 +31,20 @@ class Table extends JFrame {
     }
 
     public void updateTable() {
+        //Inicializamos las variables de control que nos ayudaran a imprimir los datos en la tabla
         String ip = null, so = null, vp = null, up = null, ram = null, freeram = null;
+        //Variable de control booleana 
         Boolean existe = false;
+        //Se llama al modelo de la tabla
         modelo = (DefaultTableModel) tabla.getModel();
-        for (int i = 0; i < InterfazDatos.clientes.size(); i++) {
-            System.out.println(InterfazDatos.clientes.size());
-            ip = InterfazDatos.clientes.get(i).ip;
+        //For que recorre el ArrayList clientes para imprimir los datos en la tabla
+        for (client cliente: InterfazDatos.clientes) {
+            ip = cliente.ip;
             so = "";
-            vp = InterfazDatos.clientes.get(i).vProcesador;
-            up = InterfazDatos.clientes.get(i).uProcesador;
-            ram = InterfazDatos.clientes.get(i).ram;
-            freeram = InterfazDatos.clientes.get(i).freeram;
+            vp = cliente.vProcesador;
+            up = cliente.uProcesador;
+            ram = cliente.ram;
+            freeram = cliente.freeram;
         }
         try {
             for (client cliente:InterfazDatos.clientes) {

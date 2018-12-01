@@ -18,6 +18,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 import org.hyperic.sigar.CpuInfo;
@@ -34,11 +36,17 @@ public class InterfazDatos {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         do {
+            //Soy servidor si no esta saturado mi procesador
             soyServidor = !estadoSaturacion();
+            //Se obtiene la ip que tiene mejor rank
             String ipOptima = obtenerIpOptima();
+            //Se obtiene la direccion local 
             InetAddress direccion = InetAddress.getLocalHost();
+            //Se obtiene la ip local
             String miIp = direccion.getHostAddress();
+            //Soy servidr si mi procesador no esta saturado y si mi ip es la mas optima
             soyServidor = estadoSaturacion() != true && ipOptima.equals(miIp);
+            //Mientras sea servidor realiza el proceso de servidor
             while (soyServidor) {
                 Socket s = null;
                 ServerSocket ss = new ServerSocket(5432);
@@ -50,11 +58,20 @@ public class InterfazDatos {
                 //TimeUnit.SECONDS.sleep(1);
                 while (true) {
                     try {
+                        ExecutorService pool = Executors.newFixedThreadPool(1);
+                        //Se acepta una nueva peticion
                         s = ss.accept();
-                        new ClientThread(s).run();
+                        //Se crea un nuevo hilo para el cliente
+                        Runnable hilo = new ClientThread(s);
+                        //Se ejecuta el hilo en un poolThread
+                        pool.execute(hilo);
+                        pool.shutdown();
+                        while (!pool.isTerminated()) {
+                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
+                    //Se realiza un update de la tabla
                     gui.updateTable();
                     soyServidor = !estadoSaturacion();
                     ipOptima = obtenerIpOptima();
@@ -71,6 +88,11 @@ public class InterfazDatos {
 
             }
             while (!soyServidor) {
+                Table gui = new Table();
+                gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                gui.setSize(600, 300);
+                gui.pack();
+                gui.setVisible(false);
                 ObjectOutputStream oos = null;
                 ObjectInputStream ois = null;
                 Socket s = null;
