@@ -38,42 +38,42 @@ class Table extends JFrame {
         //Se llama al modelo de la tabla
         modelo = (DefaultTableModel) tabla.getModel();
         //For que recorre el ArrayList clientes para imprimir los datos en la tabla
-        for (client cliente: InterfazDatos.clientes) {
+        for (client cliente : InterfazDatos.clientes) {
+            //Se asignan sus datos para utilizarlos despues
             ip = cliente.ip;
             so = "";
             vp = cliente.vProcesador;
             up = cliente.uProcesador;
             ram = cliente.ram;
             freeram = cliente.freeram;
-        }
-        try {
-            for (client cliente:InterfazDatos.clientes) {
-                System.out.println(cliente.ip);
-            }
-            
+            //Se recorre la tabla en busca de la existencia de el cliente
             for (int i = 0; i < modelo.getRowCount(); i++) {
+                //Si el cliente se encuentra en la tabla entonces si existe, sino se encuentra no existe
                 if (ip.equals(modelo.getValueAt(i, 0))) {
                     existe = true;
                     break;
+                }else{
+                    existe = false;
                 }
-
             }
+            //Si no existe el cliente en la tabla agregarlo a la tabla
             if (!existe) {
                 modelo.addRow(new Object[]{ip, so, vp, up, ram, freeram});
             }
-        } catch (Exception e) {
-            existe = false;
+            //Si existe el cliente en la tabla, actualzar su dato del uso de procesador
+            else if(existe){
+                Table.actualizarfilas(ip, up);
+            }
         }
-        System.out.println("Hola");
-        if (modelo.getRowCount() == 0) {
-            modelo.addRow(new Object[]{ip, so, vp, up, ram, freeram});
-        } else if (modelo.getRowCount() != 0) {
-            Table.actualizarfilas(ip, up);
-        }
-
+        //Modelo
+        modelo = (DefaultTableModel) tabla.getModel();
+        //Se llama al modelo de la tabla
         tabla = new JTable(modelo);
+        //Se le notifica al modelo que los datos cambiaron
         modelo.fireTableDataChanged();
+        //Se vuelve visible la tabla
         setVisible(true);
+        //Se redibuja la tabla
         repaint();
     }
 
@@ -86,6 +86,7 @@ class Table extends JFrame {
             }
         }
     }
+
     public static void eliminarfilas(String ip) {
         modelo = (DefaultTableModel) tabla.getModel();
         for (int f = 0; f < modelo.getRowCount(); f++) {
