@@ -6,7 +6,6 @@
 package interfazdatos;
 
 import com.sun.management.OperatingSystemMXBean;
-import static interfazdatos.Table.modelo;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -51,9 +50,9 @@ public class InterfazDatos {
             while (soyServidor) {
                 Socket s = null;
                 ServerSocket ss = new ServerSocket(5432);
-                Table gui = new Table();
+                Interfaz gui = new Interfaz();
                 gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                gui.setSize(600, 300);
+                gui.setSize(1000, 600);
                 gui.pack();
                 gui.setVisible(true);
                 while (soyServidor) {
@@ -68,22 +67,13 @@ public class InterfazDatos {
                         pool.shutdown();
                         while (!pool.isTerminated()) {
                         }
+                        //eliminarDesconectados();
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                     //Se realiza un update de la tabla
                     gui.updateTable();
-                    eliminarDesconectados();
-                    //Se recorre el ArrayList
                     //TimeUnit.SECONDS.sleep(1);
-
-                    //Se recorre toda la tabla
-                    /*for (int f = 0; f < modelo.getRowCount(); f++) {
-                        //Si algun valor de cualquier fila de la columna 0 (ip) no esta dentro del ArrayList ips
-                        if (!InterfazDatos.ips.contains(modelo.getValueAt(f, 0))) {
-
-                        }
-                    }*/
                     //Se verifica si aun si la maquina local es servidor verificando la saturacion
                     soyServidor = !estadoSaturacion();
                     //Se obtiene la ip optima
@@ -95,7 +85,7 @@ public class InterfazDatos {
             }
             while (!soyServidor) {
                 System.out.println("Ya no soy servidorrrrrrrrrrrrrrrr");
-                Table gui = new Table();
+                Interfaz gui = new Interfaz();
                 gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 gui.setSize(600, 300);
                 gui.pack();
@@ -231,6 +221,7 @@ public class InterfazDatos {
 
     public static boolean tablaContieneIp(String ip) {
         boolean contiene = false;
+        DefaultTableModel modelo = (DefaultTableModel) Interfaz.jTable1.getModel();
         for (int k = 0; k < modelo.getRowCount(); k++) {
             if (String.valueOf(modelo.getValueAt(k, 0)) == ip) {
                 contiene = true;
@@ -244,7 +235,7 @@ public class InterfazDatos {
 
     public static void eliminarDesconectados() {
         //Se llama al modelo
-        modelo = (DefaultTableModel) Table.tabla.getModel();
+        DefaultTableModel modelo = (DefaultTableModel) Interfaz.jTable1.getModel();
         for (int f = 0; f < InterfazDatos.clientes.size(); f++) {
             //Se recorre la tabla
             boolean seEncuentra = false;
@@ -255,7 +246,7 @@ public class InterfazDatos {
                     //Obteniendo la ip a eliminar de la tabla
                     String ipEliminada = String.valueOf(modelo.getValueAt(f, 0));
                     //Eliminando ip a eliminar de la tabla
-                    Table.eliminarfilas(ipEliminada);
+                    Interfaz.eliminarfilas(ipEliminada);
                 }
 
             }

@@ -5,8 +5,7 @@
  */
 package interfazdatos;
 
-import static interfazdatos.Table.modelo;
-import static interfazdatos.Table.tabla;
+import static interfazdatos.InterfazDatos.eliminarDesconectados;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -67,7 +66,7 @@ public class ClientThread implements Runnable {
                     InterfazDatos.ips.remove(cli.ip);
                 } else {
                     //Si la ip del cliente no es igual a la ip de algun cliente en el ArrayList clientes
-                    //Table.actualizarfilas(cli.ip, cli.uProcesador);
+                    Interfaz.actualizarfilas(cli.ip, cli.uProcesador);
                 }
             }
             //Agrega un nuevo cliente al ArrayList clientes
