@@ -80,7 +80,6 @@ class Table extends JFrame {
     public static void actualizarfilas(String ip, String uProc) {
         modelo = (DefaultTableModel) tabla.getModel();
         for (int f = 0; f < modelo.getRowCount(); f++) {
-            System.out.println(modelo.getValueAt(f, 0).equals(ip));
             if (modelo.getValueAt(f, 0).equals(ip)) {
                 modelo.setValueAt(uProc, f, 3);
             }

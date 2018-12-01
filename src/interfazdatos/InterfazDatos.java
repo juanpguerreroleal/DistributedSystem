@@ -20,6 +20,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 import org.hyperic.sigar.CpuInfo;
@@ -55,8 +56,7 @@ public class InterfazDatos {
                 gui.setSize(600, 300);
                 gui.pack();
                 gui.setVisible(true);
-                //TimeUnit.SECONDS.sleep(1);
-                while (true) {
+                while (soyServidor) {
                     try {
                         ExecutorService pool = Executors.newFixedThreadPool(1);
                         //Se acepta una nueva peticion
@@ -73,18 +73,17 @@ public class InterfazDatos {
                     }
                     //Se realiza un update de la tabla
                     gui.updateTable();
-                    //Se llama al modelo
-                    modelo = (DefaultTableModel) Table.tabla.getModel();
+                    eliminarDesconectados();
+                    //Se recorre el ArrayList
+                    //TimeUnit.SECONDS.sleep(1);
+
                     //Se recorre toda la tabla
-                    for (int f = 0; f < modelo.getRowCount(); f++) {
+                    /*for (int f = 0; f < modelo.getRowCount(); f++) {
                         //Si algun valor de cualquier fila de la columna 0 (ip) no esta dentro del ArrayList ips
                         if (!InterfazDatos.ips.contains(modelo.getValueAt(f, 0))) {
-                            //Obteniendo la ip a eliminar de la tabla
-                            String ipEliminada = String.valueOf(modelo.getValueAt(f, 0));
-                            //Eliminando ip a eliminar de la tabla
-                            Table.eliminarfilas(ipEliminada);
+
                         }
-                    }
+                    }*/
                     //Se verifica si aun si la maquina local es servidor verificando la saturacion
                     soyServidor = !estadoSaturacion();
                     //Se obtiene la ip optima
@@ -95,6 +94,7 @@ public class InterfazDatos {
 
             }
             while (!soyServidor) {
+                System.out.println("Ya no soy servidorrrrrrrrrrrrrrrr");
                 Table gui = new Table();
                 gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 gui.setSize(600, 300);
@@ -227,6 +227,40 @@ public class InterfazDatos {
         InetAddress direccion = InetAddress.getLocalHost();
         ipOptima = direccion.getHostAddress();
         return ipOptima;
+    }
+
+    public static boolean tablaContieneIp(String ip) {
+        boolean contiene = false;
+        for (int k = 0; k < modelo.getRowCount(); k++) {
+            if (String.valueOf(modelo.getValueAt(k, 0)) == ip) {
+                contiene = true;
+                break;
+            } else {
+                contiene = false;
+            }
+        }
+        return contiene;
+    }
+
+    public static void eliminarDesconectados() {
+        //Se llama al modelo
+        modelo = (DefaultTableModel) Table.tabla.getModel();
+        for (int f = 0; f < InterfazDatos.clientes.size(); f++) {
+            //Se recorre la tabla
+            boolean seEncuentra = false;
+            for (int k = 0; k < modelo.getRowCount(); k++) {
+                //Si el ArrayList no contiene la ip pero la tabla si
+                System.out.println(!(InterfazDatos.ips.contains(String.valueOf(modelo.getValueAt(k, 0)))));
+                if (!(InterfazDatos.ips.contains(String.valueOf(modelo.getValueAt(k, 0))))) {
+                    //Obteniendo la ip a eliminar de la tabla
+                    String ipEliminada = String.valueOf(modelo.getValueAt(f, 0));
+                    //Eliminando ip a eliminar de la tabla
+                    Table.eliminarfilas(ipEliminada);
+                }
+
+            }
+
+        }
     }
 
 }
